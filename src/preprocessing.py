@@ -1,23 +1,15 @@
-import pandas as pd
 from pathlib import Path
+import pandas as pd
+
+RAW_FOLDER = Path("data/raw")
 
 
 class DataPreprocessor:
 
-    def __init__(self):
-        self.raw_path = Path("data/raw")
-        self.processed_path = Path("data/processed")
+    def load_gps(self):
+        file = RAW_FOLDER / "GPS_Bidang_SMKKJ_2026.xlsx"
+        return pd.read_excel(file)
 
-    def load_excel(self, filename):
-        file_path = self.raw_path / filename
-        return pd.read_excel(file_path)
-
-    def save_processed(self, dataframe, filename):
-        output = self.processed_path / filename
-        dataframe.to_excel(output, index=False)
-
-    def clean_data(self, dataframe):
-        dataframe = dataframe.copy()
-        dataframe = dataframe.drop_duplicates()
-        dataframe = dataframe.fillna("")
-        return dataframe
+    def load_ppt(self):
+        file = RAW_FOLDER / "ANALISIS_PPT_2026_T5_OPTIMISED.xlsx"
+        return pd.read_excel(file)
