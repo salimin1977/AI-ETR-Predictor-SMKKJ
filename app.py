@@ -1,31 +1,18 @@
-import streamlit as st
+from src.preprocessing import DataPreprocessor
 
-# Konfigurasi halaman
-st.set_page_config(
-    page_title="AI ETR Predictor SMKKJ",
-    page_icon="🎯",
-    layout="wide"
-)
+processor = DataPreprocessor()
 
-# Tajuk utama
-st.title("🎯 AI ETR Predictor SMKKJ")
+try:
+    gps = processor.load_gps()
+    ppt = processor.load_ppt()
 
-st.subheader("Versi 1.0")
+    st.success("✅ Data berjaya dimuatkan")
 
-st.write("""
-Selamat datang ke AI ETR Predictor SMKKJ.
+    st.subheader("GPS Bidang")
+    st.dataframe(gps)
 
-Aplikasi ini akan digunakan untuk:
+    st.subheader("Analisis PPT")
+    st.dataframe(ppt)
 
-✅ Analisis GPS
-
-✅ Analisis GPMP
-
-✅ Analisis Gred Purata Bidang
-
-✅ Ramalan ETR SPM
-
-✅ Dashboard Prestasi Sekolah
-""")
-
-st.success("Projek berjaya dimulakan.")
+except Exception as e:
+    st.error(e)
