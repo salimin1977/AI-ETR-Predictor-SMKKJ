@@ -6,29 +6,18 @@ class DataPreprocessor:
 
     def __init__(self):
         self.raw_path = Path("data/raw")
+        self.processed_path = Path("data/processed")
 
-    def clean_dataframe(self, df):
-        # Buang baris kosong
-        df = df.dropna(how="all")
+    def load_excel(self, filename):
+        file_path = self.raw_path / filename
+        return pd.read_excel(file_path)
 
-        # Buang lajur kosong / Unnamed
-        df = df.loc[:, ~df.columns.astype(str).str.contains("^Unnamed")]
+    def save_processed(self, dataframe, filename):
+        output = self.processed_path / filename
+        dataframe.to_excel(output, index=False)
 
-        # Reset index
-        df = df.reset_index(drop=True)
-
-        return df
-
-    def load_gps(self):
-        file = self.raw_path / "GPS_Bidang_SMKKJ_2026.xlsx"
-
-        df = pd.read_excel(file)
-
-        return self.clean_dataframe(df)
-
-    def load_ppt(self):
-        file = self.raw_path / "ANALISIS_PPT_2026_T5_OPTIMISED.xlsx"
-
-        df = pd.read_excel(file)
-
-        return self.clean_dataframe(df)
+    def clean_data(self, dataframe):
+        dataframe = dataframe.copy()
+        dataframe = dataframe.drop_duplicates()
+        dataframe = dataframe.fillna("")
+        return dataframe
