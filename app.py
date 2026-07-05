@@ -1,4 +1,16 @@
+import streamlit as st
 from src.preprocessing import DataPreprocessor
+
+# Konfigurasi halaman
+st.set_page_config(
+    page_title="AI ETR Predictor SMKKJ",
+    page_icon="🎯",
+    layout="wide"
+)
+
+# Tajuk aplikasi
+st.title("🎯 AI ETR Predictor SMKKJ")
+st.subheader("Versi 1.0")
 
 processor = DataPreprocessor()
 
@@ -15,4 +27,4 @@ try:
     st.dataframe(ppt)
 
 except Exception as e:
-    st.error(e)
+    st.error(f"Ralat: {e}")
