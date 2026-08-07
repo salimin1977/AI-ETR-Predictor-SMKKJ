@@ -27,13 +27,19 @@ AI-ETR-Predictor-SMKKJ/
 │   ├── preprocessing.py       # Penghuraian & pembersihan data (DataPreprocessor)
 │   ├── analytics.py           # Pengiraan KPI/ringkasan (Analytics)
 │   ├── predictor.py           # Model AI ETR (ETRPredictor)
-│   └── dashboard.py           # Rajah Plotly (fig_*) + show_header()
+│   ├── dashboard.py           # Rajah Plotly (fig_*) + show_header()
+│   ├── auth.py                # Hash/sahkan kata laluan (bcrypt), authenticate()
+│   ├── login.py                # Halaman log masuk Streamlit
+│   ├── session.py             # Pembalut st.session_state (log masuk/keluar, tamat masa)
+│   ├── users.py                # Storan pengguna berasaskan JSON (UserStore)
+│   └── permissions.py          # Kawalan akses berperanan (RBAC)
 ├── tests/                     # Ujian pytest
 ├── docs/
 │   └── MODULES.md             # Dokumentasi terperinci setiap modul
 ├── data/
 │   ├── raw/                   # Fail sumber (.xlsx / .pdf, tidak diubah)
-│   └── processed/             # Output DataPreprocessor.save_processed()
+│   ├── processed/             # Output DataPreprocessor.save_processed()
+│   └── auth/                  # users.json (dijana automatik, di-gitignore)
 ├── models/                    # Model terlatih (.joblib, di-gitignore)
 ├── logs/                      # Log aplikasi (app.log, di-gitignore)
 ├── reports/
@@ -62,6 +68,32 @@ streamlit run app.py
 pytest -q
 ```
 
+## Log Masuk & Peranan
+
+Aplikasi memerlukan log masuk. Akaun disimpan dalam `data/auth/users.json`
+(kata laluan di-hash dengan bcrypt) — fail ini dijana **automatik** pada
+larian pertama dengan satu akaun lalai bagi setiap peranan:
+
+| Peranan | Nama Pengguna | Kata Laluan Lalai |
+|---|---|---|
+| Pengetua | `pengetua` | `Pengetua@SMKKJ2026` |
+| PK Pentadbiran | `pk_pentadbiran` | `PkPentadbiran@SMKKJ2026` |
+| GKMP | `gkmp` | `Gkmp@SMKKJ2026` |
+| Ketua Panitia | `ketua_panitia` | `KetuaPanitia@SMKKJ2026` |
+| Guru | `guru` | `Guru@SMKKJ2026` |
+
+⚠️ **TUKAR kata laluan lalai serta-merta selepas log masuk pertama** —
+fail `data/auth/users.json` tidak dikongsi/dikomit ke Git (lihat
+`.gitignore`), jadi ia unik kepada setiap pemasangan, tetapi kata laluan
+lalai di atas boleh dilihat oleh sesiapa yang membaca kod sumber.
+
+Setiap peranan melihat subset halaman navigasi yang berbeza (lihat
+`src/permissions.py` untuk jadual penuh) — contohnya Guru tidak melihat
+halaman "GPS Bidang" atau "Ramalan AI ETR". Ini adalah kawalan akses
+peringkat **halaman**; data itu sendiri tidak lagi ditapis mengikut
+subjek/bidang pengguna kerana akaun belum dipautkan kepada subjek/bidang
+tertentu — lanjutan semula jadi untuk versi akan datang.
+
 ## Data yang disokong
 
 - `GPS_Bidang_SMKKJ_2026.xlsx` — Ringkasan GP Bidang, sasaran GPS setiap
@@ -87,7 +119,7 @@ individu. Lihat docstring `src/predictor.py` untuk penjelasan penuh.
 - Analisis GPS
 - Analisis GP Bidang
 
-**Versi 2.0** *(semasa)*
+**Versi 2.0**
 - Penghuraian data tulen (bukan pembersihan generik) untuk kedua-dua
   workbook sumber
 - Analitik KPI/risiko sebenar
@@ -96,6 +128,14 @@ individu. Lihat docstring `src/predictor.py` untuk penjelasan penuh.
 - Log berpusat + pengendalian ralat konsisten
 - Ujian pytest
 
+**Versi 2.1** *(semasa)*
+- Log masuk & pengesahan kata laluan (bcrypt)
+- Kawalan akses berperanan (RBAC) — 5 peranan, navigasi halaman ditapis
+  mengikut peranan
+- Pengurusan sesi (tamat masa tidak aktif)
+
 **Akan datang**
+- Pautkan akaun kepada subjek/bidang tertentu untuk penapisan data
+  peringkat baris (bukan sekadar peringkat halaman)
 - Integrasi PDF (`ANALISIS SPM 2025 (SEKOLAH).pdf`) ke dalam paip data
 - Auto report / eksport laporan

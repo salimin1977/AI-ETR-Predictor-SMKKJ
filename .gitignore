@@ -24,6 +24,9 @@ logs/*.log
 logs/*.log.*
 !logs/.gitkeep
 
+# User store (password hashes) - runtime state, auto-seeded on first run
+data/auth/
+
 # Operating System
 .DS_Store
 Thumbs.db

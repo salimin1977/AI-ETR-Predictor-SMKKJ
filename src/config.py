@@ -18,6 +18,11 @@ MODELS_DIR = PROJECT_ROOT / "models"
 LOGS_DIR = PROJECT_ROOT / "logs"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 
+AUTH_DIR = DATA_DIR / "auth"
+USERS_FILE = AUTH_DIR / "users.json"
+# How long a session may sit idle before is_authenticated() forces a logout.
+SESSION_TIMEOUT_MINUTES = 60
+
 GPS_BIDANG_FILE = "GPS_Bidang_SMKKJ_2026.xlsx"
 PPT_ANALYSIS_FILE = "ANALISIS_PPT_2026_T5_OPTIMISED.xlsx"
 
@@ -29,4 +34,4 @@ LOG_FORMAT = "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
 # warning is logged instead of raising an error.
 MIN_ROWS_FOR_SPLIT = 10
 
-APP_VERSION = "2.0.0"
+APP_VERSION = "2.1.0"

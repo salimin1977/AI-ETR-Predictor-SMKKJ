@@ -23,8 +23,11 @@ from src.dashboard import (
 )
 from src.exceptions import ETRPredictorError
 from src.logging_config import configure_logging, get_logger
+from src.login import render_login_form
 from src.predictor import ETRPredictor
 from src.preprocessing import DataPreprocessor, classify_gp_band
+from src import permissions, session
+from src.users import UserStore
 
 configure_logging()
 logger = get_logger(__name__)
@@ -33,8 +36,7 @@ st.set_page_config(page_title="AI ETR Predictor SMKKJ", page_icon="🎯", layout
 
 processor = DataPreprocessor()
 analytics = Analytics()
-
-NAV_PAGES = ["Ringkasan", "GPS Bidang", "Analisis PPT", "Ramalan AI ETR", "Tentang"]
+UserStore().ensure_seeded()
 
 
 # ----------------------------------------------------------------------
@@ -240,10 +242,27 @@ PAGES = {
 
 
 def main():
-    show_header()
-    st.caption(f"Versi {APP_VERSION}")
+    if not session.is_authenticated():
+        render_login_form()
+        st.stop()
 
-    choice = st.sidebar.radio("Navigasi", NAV_PAGES)
+    user = session.current_user()
+    allowed_pages = permissions.pages_for_role(user.role)
+    if not allowed_pages:
+        st.error("Akaun anda tiada akses kepada mana-mana halaman. Hubungi pentadbir.")
+        logger.error("Pengguna '%s' (peranan '%s') tiada halaman dibenarkan", user.username, user.role)
+        st.stop()
+
+    show_header()
+    st.caption(f"Versi {APP_VERSION} • Log masuk sebagai {user.full_name} ({user.role})")
+
+    if st.sidebar.button("Log Keluar"):
+        session.logout()
+        st.rerun()
+
+    default_page = permissions.default_page_for(user.role)
+    default_index = allowed_pages.index(default_page) if default_page in allowed_pages else 0
+    choice = st.sidebar.radio("Navigasi", allowed_pages, index=default_index)
 
     try:
         PAGES[choice]()

@@ -26,3 +26,7 @@ class ModelNotTrainedError(ETRPredictorError):
 
 class InsufficientDataError(ETRPredictorError):
     """Raised when there isn't enough data to safely fit or evaluate a model."""
+
+
+class AuthenticationError(ETRPredictorError):
+    """Raised when login credentials are invalid or the account is inactive."""
