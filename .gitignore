@@ -13,9 +13,16 @@ env/
 
 # Models
 models/*.pkl
+models/*.joblib
 
 # Processed Data
 data/processed/*
+!data/processed/.gitkeep
+
+# Logs
+logs/*.log
+logs/*.log.*
+!logs/.gitkeep
 
 # Operating System
 .DS_Store
